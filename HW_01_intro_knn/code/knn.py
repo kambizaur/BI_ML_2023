@@ -55,10 +55,7 @@ class KNNClassifier:
            with distances between each test and each train sample
         """
         
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        return np.array([[np.abs(test_x - train_x).sum() for train_x in self.train_X] for test_x in X])
 
 
     def compute_distances_one_loop(self, X):
@@ -74,10 +71,7 @@ class KNNClassifier:
            with distances between each test and each train sample
         """
 
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        return np.array([np.abs(test_x - self.train_X).sum(axis=1) for test_x in X])
 
 
     def compute_distances_no_loops(self, X):
@@ -93,10 +87,7 @@ class KNNClassifier:
            with distances between each test and each train sample
         """
 
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        return np.abs(X[:, None] - self.train_X).sum(axis= -1)
 
 
     def predict_labels_binary(self, distances):
@@ -114,11 +105,12 @@ class KNNClassifier:
         n_train = distances.shape[1]
         n_test = distances.shape[0]
         prediction = np.zeros(n_test)
-
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        
+        for i, dists in enumerate(distances):
+            sorted_y, _ = zip(*sorted(zip(self.train_y, dists), key=lambda x: x[1]))
+            knn_labels, knn_counts = np.unique(sorted_y[:self.k], return_counts=True)
+            prediction[i] = sorted(zip(knn_labels, knn_counts), key=lambda x: x[1], reverse=True)[0][0]
+        return prediction.astype(bool)
 
 
     def predict_labels_multiclass(self, distances):
@@ -137,7 +129,8 @@ class KNNClassifier:
         n_test = distances.shape[0]
         prediction = np.zeros(n_test, np.int)
 
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        for i, dists in enumerate(distances):
+            sorted_y, _ = zip(*sorted(zip(self.train_y, dists), key=lambda x: x[1]))
+            knn_labels, knn_counts = np.unique(sorted_y[:self.k], return_counts=True)
+            prediction[i] = sorted(zip(knn_labels, knn_counts), key=lambda x: x[1], reverse=True)[0][0]
+        return prediction.astype(int)
